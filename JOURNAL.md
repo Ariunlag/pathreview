@@ -17,3 +17,25 @@ This issue has a limited scope because it primarily affects one unit test file a
 **Setup confirmation:** [x] App runs locally at localhost:5173
 
 **Cohort ledger:** [x] Issue added to cohort ledger
+
+
+## Week 8 — Reproduction & solution planning
+
+**Reproduction commit link:** [дараа нь commit link тавина]
+
+**Reproduction summary:**
+I reproduced issue #158 by running:
+
+`pytest tests/unit/test_review_service.py -q`
+
+The test suite produced 13 failed tests and 6 passed tests. The `get_review()` tests fail with `AttributeError: 'coroutine' object has no attribute 'first'`, while the `list_reviews()` tests fail with `AttributeError: 'coroutine' object has no attribute 'all'`.
+
+The failures occur because the tests configure the result returned by `db.execute()` as an `AsyncMock`. The service correctly awaits `db.execute()`, but then uses `scalars().first()` and `scalars().all()` synchronously.
+
+**PLAN.md link:** [дараа нь link тавина]
+
+**Walkthrough video (recommended):**
+Not recorded
+
+**Blockers or open questions:**
+I need to verify how the mocked SQLAlchemy Result object should behave and how to handle the two `db.execute()` calls made by `list_reviews()`.
