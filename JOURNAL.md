@@ -21,7 +21,7 @@ This issue has a limited scope because it primarily affects one unit test file a
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** https://github.com/Ariunlag/pathreview/commit/FULL_COMMIT_SHA
+**Reproduction commit link:** https://github.com/Ariunlag/pathreview/commit/c4132846d5324d6ee3ea4a9b07b553d8e4476ce0
 
 **Reproduction summary:**
 I reproduced issue #158 by running:
