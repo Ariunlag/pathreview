@@ -21,7 +21,7 @@ This issue has a limited scope because it primarily affects one unit test file a
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** [дараа нь commit link тавина]
+**Reproduction commit link:** https://github.com/Ariunlag/pathreview/commit/FULL_COMMIT_SHA
 
 **Reproduction summary:**
 I reproduced issue #158 by running:
@@ -32,7 +32,7 @@ The test suite produced 13 failed tests and 6 passed tests. The `get_review()` t
 
 The failures occur because the tests configure the result returned by `db.execute()` as an `AsyncMock`. The service correctly awaits `db.execute()`, but then uses `scalars().first()` and `scalars().all()` synchronously.
 
-**PLAN.md link:** (https://github.com/Ariunlag/pathreview/blob/test/158-review-service-async-mocks/PLAN.md)
+**PLAN.md link:** [PLAN.md](https://github.com/Ariunlag/pathreview/blob/test/158-review-service-async-mocks/PLAN.md)
 
 **Walkthrough video (recommended):**
 Not recorded
