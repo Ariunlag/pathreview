@@ -1,6 +1,6 @@
 ## Solution plan
 
-**Issue:** review_service unit tests misconfigure async mocks — 13 of 19 tests fail  
+**Issue:** review_service unit tests misconfigure async mocks — 13 of 19 tests fail
 https://github.com/ascherj/pathreview/issues/158
 
 ### Understand
