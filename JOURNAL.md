@@ -18,7 +18,6 @@ This issue has a limited scope because it primarily affects one unit test file a
 
 **Cohort ledger:** [x] Issue added to cohort ledger
 
-
 ## Week 8 — Reproduction & solution planning
 
 **Reproduction commit link:** https://github.com/Ariunlag/pathreview/commit/c4132846d5324d6ee3ea4a9b07b553d8e4476ce0
@@ -39,3 +38,38 @@ Not recorded
 
 **Blockers or open questions:**
 I need to verify how the mocked SQLAlchemy Result object should behave and how to handle the two `db.execute()` calls made by `list_reviews()`.
+
+## Week 9 — Solution building & PR submission
+
+### Check-in 1 (mid-week)
+
+**Current progress:**
+Implemented the fix for issue #158 in `tests/unit/test_review_service.py`. The tests now keep `db.execute()` as an `AsyncMock`, while the SQLAlchemy result objects returned from it use `MagicMock` so that synchronous calls such as `scalars().first()` and `scalars().all()` behave correctly.
+
+The `list_reviews()` tests were also updated to represent its two database executions separately: one result for the count query and one for the paginated query. An existing assertion was updated to reflect that `list_reviews()` correctly calls `db.execute()` twice.
+
+The issue-specific test file now passes completely:
+
+`19 passed, 1 warning`
+
+The full unit test suite improved from:
+
+`53 failed, 375 passed, 1 warning`
+
+to:
+
+`40 failed, 388 passed, 1 warning`
+
+This resolves 13 failures, matching the 13 failures originally reproduced for issue #158.
+
+The changed test file also passes both Ruff and Black checks.
+
+Implementation commit:
+
+`cf3a6c0 — test(api): fix async mocks in review service tests`
+
+**Next steps:**
+Push the implementation and journal updates, open a Draft PR, request peer or mentor feedback, address any review comments, and then complete the final Week 9 check-in before marking the PR ready for review.
+
+**Blockers:**
+Repository-wide quality checks have pre-existing failures outside the scope of issue #158. Ruff reports 174 errors across unrelated files, Black reports 51 files that would require reformatting, and mypy stops with five errors related to missing or untyped dependencies and type-stub/toolchain compatibility. The changed `review_service` test file itself passes Ruff, Black, and all 19 targeted tests.
