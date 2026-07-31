@@ -73,3 +73,22 @@ Push the implementation and journal updates, open a Draft PR, request peer or me
 
 **Blockers:**
 Repository-wide quality checks have pre-existing failures outside the scope of issue #158. Ruff reports 174 errors across unrelated files, Black reports 51 files that would require reformatting, and mypy stops with five errors related to missing or untyped dependencies and type-stub/toolchain compatibility. The changed `review_service` test file itself passes Ruff, Black, and all 19 targeted tests.
+
+
+### Check-in 2 (end of week)
+
+**PR link:** https://github.com/ascherj/pathreview/pull/445
+
+**Branch:** test/158-review-service-async-mocks
+
+**What you built:**
+Fixed the async mock configuration in `tests/unit/test_review_service.py`. `db.execute()` remains an `AsyncMock`, while the SQLAlchemy result objects returned from it use `MagicMock`. The `list_reviews()` tests now model the count query and paginated query separately.
+
+**Tests added or updated:**
+Updated the existing `review_service` unit tests to correctly model synchronous SQLAlchemy result behavior. The targeted test file passes with `19 passed, 1 warning`. The full unit suite improved from `53 failed, 375 passed, 1 warning` to `40 failed, 388 passed, 1 warning`, resolving the 13 failures associated with issue #158.
+
+**Self-review confirmation:** [ ] make check passes  [ ] make test-unit passes
+
+Repository-wide checks still contain failures outside the scope of this change. The modified test file passes Ruff, Black, and all 19 targeted tests. The remaining repository-wide failures are documented in the PR description.
+
+**Draft PR feedback received from:** No feedback received before final submission.
