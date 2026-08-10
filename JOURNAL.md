@@ -92,3 +92,68 @@ Updated the existing `review_service` unit tests to correctly model synchronous 
 Repository-wide checks still contain failures outside the scope of this change. The modified test file passes Ruff, Black, and all 19 targeted tests. The remaining repository-wide failures are documented in the PR description.
 
 **Draft PR feedback received from:** No feedback received before final submission.
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:**
+No reviewer or maintainer feedback was received on the GitHub PR. The Summer 2026 course notes indicate that reviewer feedback is not provided as a course feature this term.
+
+**How you responded:**
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+The hardest part was determining whether the failures came from the production service or from the tests themselves. The error messages involved coroutines, so initially it was possible to suspect that the service was incorrectly handling asynchronous database operations.
+
+After tracing the service code, I found that `db.execute()` is correctly awaited, but the SQLAlchemy result returned from that awaited operation is consumed synchronously through calls such as `scalars().first()` and `scalars().all()`. The tests incorrectly used `AsyncMock` for both layers.
+
+Another unexpected detail was that `list_reviews()` performs two database executions: one for the total count and another for the paginated results. That required two separate synchronous result mocks using `side_effect`, rather than one shared result.
+
+The repository-wide quality state was also more complicated than I expected. Fixing my issue did not make the entire repository green because unrelated Ruff, Black, mypy, and unit-test failures already existed. I had to separate failures caused by my change from failures that were outside the scope of issue #158.
+
+**What did you learn about working in a large codebase?**
+I learned that working in an existing codebase requires verifying assumptions before changing code. In my own projects, I can often change implementation and tests together. In someone else's codebase, I need to first understand the existing contract and determine which side is actually incorrect.
+
+For this issue, the production implementation did not need to change. Reading the service code carefully showed that the mocks were the problem. Changing production code just to make the tests pass could have introduced a real bug.
+
+I also learned the importance of baseline measurements. I reproduced 13 failures before implementation and finished with all 19 targeted tests passing. The full unit suite changed from `53 failed, 375 passed` to `40 failed, 388 passed`, which provided strong evidence that the 13 issue-specific failures were resolved.
+
+The Week 9 grading feedback also showed me that this baseline discipline should be applied more consistently to repository-wide quality checks. I documented the remaining Ruff, Black, and mypy failures, but a stronger process would have recorded the exact before-and-after state of each repository-wide command.
+
+**How did AI tools help — and where did they fall short?**
+AI tools were most useful for helping me reason about `AsyncMock` versus `MagicMock`, interpret coroutine-related failures, understand how the mocked SQLAlchemy result should behave, and organize the Git and pull request workflow.
+
+AI also helped me think through why an asynchronous method can return an object whose later methods are synchronous. That distinction was central to solving the issue.
+
+However, AI could not determine the actual state of the repository without me running the code. I still needed to execute the targeted tests, full unit suite, Ruff, Black, and mypy locally and compare the results. AI could suggest what to investigate, but the actual evidence had to come from the repository and test results.
+
+I also needed to verify that suggested changes matched the real production implementation instead of applying them simply because they sounded reasonable.
+
+**What would you do differently if you started over?**
+I would establish a more complete baseline before changing any code.
+
+I would record:
+- the targeted test results,
+- the full unit-test results,
+- repository-wide lint results,
+- formatting results,
+- type-checking results,
+
+and then run the exact same commands after implementation.
+
+For this issue, I captured the targeted and full-unit-test comparison well, but the Week 9 grading feedback showed that I should have done the same before-and-after comparison for every repository-wide quality command. That would make it easier for a reviewer or grader to verify that my change introduced no new problems.
+
+I would also inspect the complete execution flow of `list_reviews()` earlier. Recognizing immediately that it calls `db.execute()` twice would have made the correct mock structure obvious sooner.
+
+**What are you most proud of from this module?**
+I am most proud that I identified the actual source of the failure instead of changing production code just to make the tests pass.
+
+The final implementation preserved the existing service behavior and corrected the tests so that the mocks reflected the real asynchronous and synchronous boundaries. The 13 failures I initially reproduced were all resolved, and the targeted test file finished with 19 passing tests.
+
+I am also proud that I documented the remaining repository-wide failures rather than claiming that checks passed when they did not. Even though the repository was not completely green, the final documentation accurately described what my contribution fixed and what remained outside the scope of issue #158.
